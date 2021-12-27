@@ -1,8 +1,8 @@
 {
   "name": "lf-crm",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Building a CRM using NESTJS mySQL and docker",
+  "author": "Filipe 'Ender' Araujo",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
