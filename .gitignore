@@ -12,6 +12,16 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+#prisma case
+dbml
+docs
+generated
+nestjs-graphql
+nestjs-DTO
+migrations
+json
+prismatypeGQLTypeGeenrator
+
 # OS
 .DS_Store
 

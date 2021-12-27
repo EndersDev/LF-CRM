@@ -30,7 +30,7 @@ generator nestgraphql {
 
 generator nestjsDto {
   provider                        = "prisma-generator-nestjs-dto"
-  output                          = "./generated/DTO"
+  output                          = "./nestjs-DTO"
   outputToNestJsResourceStructure = "false"
   exportRelationModifierClasses   = "true"
   createDtoPrefix                 = "Create"
@@ -46,9 +46,21 @@ generator erd {
   theme    = "dark"
 }
 
+generator prismaClassGenerator {
+  provider = "prisma-class-generator"
+  output   = "./generator/classes"
+}
+
 generator typegraphql {
   provider = "typegraphql-prisma"
   output   = "./generated/type-graphql"
+}
+
+generator PrismaTypeGraphQLTypesGenerator {
+  provider     = "npx prisma-typegraphql-types-generator"
+  modelsOutput = "./prisma/prismatypeGQLTypeGeenrator/models"
+  enumsOutput  = "./prisma/prismatypeGQLTypeGeenrator/types/enums"
+  useYarn      = true
 }
 
 model User {
