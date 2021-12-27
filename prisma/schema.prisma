@@ -1,0 +1,229 @@
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+  output   = "./dbml"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "./docs"
+
+}
+
+generator jsonSchema {
+  provider = "prisma-json-schema-generator"
+  output   = "./json"
+}
+
+generator nestgraphql {
+  provider = "node node_modules/prisma-nestjs-graphql"
+  output   = "./nestjs-graphql"
+}
+
+generator nestjsDto {
+  provider                        = "prisma-generator-nestjs-dto"
+  output                          = "./generated/DTO"
+  outputToNestJsResourceStructure = "false"
+  exportRelationModifierClasses   = "true"
+  createDtoPrefix                 = "Create"
+  updateDtoPrefix                 = "Update"
+  dtoSuffix                       = "Dto"
+  entityPrefix                    = ""
+  entitySuffix                    = ""
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./erd/ERD.svg"
+  theme    = "dark"
+}
+
+generator typegraphql {
+  provider = "typegraphql-prisma"
+  output   = "./generated/type-graphql"
+}
+
+model User {
+  id       String       @id @default(cuid())
+  name     String
+  password String
+  email    String
+  type     EnumTypeUser
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clients Client[] @relation("prefered seller")
+
+  ordersD Order[] @relation("digiter")
+  ordersS Order[] @relation("seller")
+
+
+}
+
+model Client {
+  id         String         @id @default(cuid())
+  name       String
+  trade      String
+  cnpj       Int
+  stateReg   Int
+  suframa    Int
+  type       EnumTypeClient
+  pCode      Int
+  address    String
+  village    String
+  city       String
+  state      String
+  phone      Int
+  email      String
+  obs        String?
+  carrying   Carrying       @relation(fields: [carryingId], references: [id])
+  carryingId String
+  lastbuy    DateTime
+  contacs    Contact[]
+  seller     User           @relation("prefered seller", fields: [sellerId], references: [id])
+  sellerId   String
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Industry {
+  id       String @id @default(cuid())
+  cnpj     Int
+  charge   Float?
+  email    String
+  address  String
+  stateReg Int
+  name     String
+  trade    String
+  company  String
+  phone    Int
+
+  products Product[]
+  orders   Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Carrying {
+  id       String @id @default(cuid())
+  cnpj     Int
+  email    String
+  address  String
+  stateReg Int
+  name     String
+  trade    String
+  company  String
+  phone    Int
+
+  clients Client[]
+  orders  Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id         String           @id @default(cuid())
+  code       String
+  color      String?
+  createdAt  DateTime         @default(now())
+  pack       Int
+  supplier   Industry         @relation(fields: [supplierId], references: [id])
+  supplierId String
+  picture    String?
+  name       String
+  orders     Order[]
+  price      Float
+  unity      EnumProductUnity
+  updatedAt  DateTime         @updatedAt
+}
+
+model Order {
+  id          Int             @id @default(autoincrement())
+  industry    Industry        @relation(fields: [industryId], references: [id])
+  industryId  String
+  status      EnumStatusOrder @default(Rascunho)
+  total       Float           @default(0.00)
+  itens       Product[]
+  qtdItens    Int             @default(0)
+  commision   Float           @default(0.00)
+  invoice     Invoice         @relation(fields: [invoiceId], references: [id])
+  invoiceId   String
+  client      Client          @relation(fields: [clientId], references: [id])
+  clientId    String
+  deliveryDay DateTime
+  seller      User            @relation("seller", fields: [sellerId], references: [id])
+  sellerId    String
+  digiter     User            @relation("digiter", fields: [digiterId], references: [id])
+  digiterId   String
+  publicObs   String?
+  privObs     String?
+  carrying    Carrying        @relation(fields: [carryingId], references: [id])
+  carryingId  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+}
+
+model Contact {
+  id    String  @id @default(cuid())
+  email String?
+  name  String
+  phone Int
+  obs   String
+
+  clients Client[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id     String  @id @default(cuid())
+  dir    String
+  number Int
+  weight Int
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EnumProductUnity {
+  CX
+  PCT
+}
+
+enum EnumStatusOrder {
+  Rascunho // orçamento
+  Ativo // a ser enviado
+  Atendido // recebido
+  Faturado // ja ganhamo com ele fechadissimo
+  Cancelado
+}
+
+enum EnumTypeClient {
+  Jur
+  Fis
+}
+
+enum EnumTypeUser {
+  Seller
+  Digiter
+  Finance
+  Admin
+}
